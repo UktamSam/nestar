@@ -15,10 +15,10 @@ import { DatabaseModule } from './database/database.module';
     uploads: false,
     autoSchemaFile: true,
   }), 
-  ComponentsModule, 
-  DatabaseModule 
+  ComponentsModule, // HTTP
+  DatabaseModule // TCP
 ],
-  controllers: [AppController],
+  controllers: [AppController], // HTTP
   providers: [AppService, AppResolver],
 })
 export class AppModule {}
