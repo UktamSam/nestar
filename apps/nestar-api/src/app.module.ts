@@ -7,6 +7,7 @@ import { ApolloDriver } from "@nestjs/apollo";
 import { AppResolver } from './app.resolver';
 import { ComponentsModule } from './components/components.module';
 import { DatabaseModule } from './database/database.module';
+import { BoardModule } from './article/components/board/board.module';
 
 @Module({
   imports: [ ConfigModule.forRoot(), GraphQLModule.forRoot({
@@ -16,7 +17,7 @@ import { DatabaseModule } from './database/database.module';
     autoSchemaFile: true,
   }), 
   ComponentsModule, // HTTP
-  DatabaseModule // TCP
+  DatabaseModule, BoardModule // TCP
 ],
   controllers: [AppController], // HTTP
   providers: [AppService, AppResolver],
