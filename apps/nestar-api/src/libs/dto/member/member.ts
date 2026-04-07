@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType } from "@nestjs/graphql";
-import { ObjectId } from "mongoose";
+import type { ObjectId } from 'mongodb';
 import { MemberAuthType, MemberStatus, MemberType } from "../../enums/member.enum";
 
 
@@ -63,7 +63,7 @@ export class Member {
     memberComments: number;
 
     @Field(() => Int)
-    memberRanks: number;
+    memberRank: number;
 
     @Field(() => Int)
     memberWarnings: number;
