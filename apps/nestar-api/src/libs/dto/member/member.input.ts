@@ -22,7 +22,7 @@ export class MemberInput {
 
     @IsOptional()
     @Field(() => MemberType, { nullable: true }) // bo'sh bo'lishi mumkin
-    memberType: MemberType;
+    memberType?: MemberType;
 }
 
 @InputType()

@@ -33,7 +33,7 @@ export class Member {
     memberImage: string;
 
     @Field(() => String, { nullable: true }) // bo'sh bo'lishi mumkin
-    memberAddress: string;
+    memberAddress?: string;
 
     @Field(() => String, { nullable: true }) // bo'sh bo'lishi mumkin
     memberDesc?: string;
