@@ -17,7 +17,7 @@ export class MemberService {
         const result = await this.memberModel.create(input);
         // TO DO: Auth Token yaratish 
         return result;
-        } catch (err) {
+        } catch (err: any) {
            console.log('Error, Service.model:', err.message);
             throw new BadRequestException(Message.USED_MEMBER_NICK_OR_PHONE);
         }
