@@ -10,15 +10,12 @@
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./apps",
-    "ignoreDeprecations": "6.0",
-    "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false,
-    "paths": {}
+    "noFallthroughCasesInSwitch": false
   }
 }
