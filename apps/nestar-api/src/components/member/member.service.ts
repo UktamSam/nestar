@@ -60,8 +60,8 @@ export class MemberService {
         return 'getMember successfull!';
     }
 
-    public async getAllMembers(): Promise<string> {
-        return "getAllMembers successful!";
+    public async getAllMembersByAdmin(): Promise<string> {
+        return "getAllMembersByAdmin successful!";
     }
 
     public async updateMemberByAdmin(): Promise<string> {
