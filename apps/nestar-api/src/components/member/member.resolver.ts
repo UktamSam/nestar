@@ -22,6 +22,7 @@ export class MemberResolver {
     }
     // (3) INTERCEPTOR.res
 
+    // Authentication: User, Admin, Agent
     @Mutation(() => String)
     public async updateMember(): Promise<string> {
         console.log("Mutation: updateMember!");
@@ -32,5 +33,19 @@ export class MemberResolver {
     public async getMember(): Promise<string> {
         console.log('Query getMember!');
         return this.memberService.getMember();
+    }
+
+    /* Admin */
+
+    // Authorization: Admin
+    @Mutation(() => String)
+    public async getAllMembers(): Promise<string> {
+        return this.memberService.getAllMembers();
+    }
+
+    // Authorization: Admin
+    @Mutation(() => String)
+    public async updateMemberByAdmin(): Promise<string> {
+        return this.memberService.updateMemberByAdmin();
     }
 }
