@@ -17,7 +17,10 @@ export class MemberService {
         input.memberPassword = await this.authservice.hasshPassword(input.memberPassword);
         try {
         const result = await this.memberModel.create(input);
-        // TO DO: Auth Token yaratish 
+
+        result.accessToken = await this.authservice.createToken(result); // token yaratish va uni result ga saqlash, keyinchalik login qilganda tekshirish uchun
+        console.log("accessToken:", result.accessToken);
+        
         return result;
         } catch (err: any) {
            console.log('Error, Service.model:', err.message);
@@ -42,10 +45,10 @@ export class MemberService {
 
         // TO DO: compare password
         const isMatch = await this.authservice.comparePassword(memberPassword, response.memberPassword);
-        if (!isMatch) {
-            throw new InternalServerErrorException(Message.WRONG_PASSWORD);
-        }
+        if (!isMatch) throw new InternalServerErrorException(Message.WRONG_PASSWORD);
 
+        response.accessToken = await this.authservice.createToken(response); // token yaratish va uni response ga saqlash, keyinchalik tekshirish uchun
+        
         return response;
     }
 
