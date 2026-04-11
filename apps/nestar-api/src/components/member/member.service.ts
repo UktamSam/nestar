@@ -5,14 +5,16 @@ import { Member } from '../../libs/dto/member/member';
 import { LoginInput, MemberInput } from '../../libs/dto/member/member.input';
 import { MemberStatus } from '../../libs/enums/member.enum';
 import { Message } from '../../libs/enums/common.enum';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class MemberService {
 
-    constructor(@InjectModel("Member") private readonly memberModel: Model<Member>) {}
+    constructor(@InjectModel("Member") private readonly memberModel: Model<Member>, 
+                private authservice: AuthService,) {}
 
     public async signup(input: MemberInput): Promise<Member> {
-        // TO DO: Hash Password
+        input.memberPassword = await this.authservice.hasshPassword(input.memberPassword);
         try {
         const result = await this.memberModel.create(input);
         // TO DO: Auth Token yaratish 
@@ -25,11 +27,13 @@ export class MemberService {
 
     public async login(input: LoginInput): Promise<Member> {
         const { memberNick, memberPassword } = input;
+        console.log("MVC: Service: ", input);
         const response = await this.memberModel
             .findOne({ memberNick: memberNick})
             .select("+memberPassword")
             .exec();
 
+    // (2) Schema
         if (!response || response.memberStatus === MemberStatus.DELETE) {
             throw new InternalServerErrorException(Message.NO_MEMBER_NICK);
         } else if (response.memberStatus === MemberStatus.BLOCK) {
@@ -37,7 +41,7 @@ export class MemberService {
         }
 
         // TO DO: compare password
-        const isMatch = memberPassword === response.memberPassword; 
+        const isMatch = await this.authservice.comparePassword(memberPassword, response.memberPassword);
         if (!isMatch) {
             throw new InternalServerErrorException(Message.WRONG_PASSWORD);
         }

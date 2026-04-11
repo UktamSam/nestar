@@ -3,9 +3,10 @@ import { MemberResolver } from './member.resolver';
 import { MemberService } from './member.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import MemberSchema from '../../schemas/Member.model';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [ MongooseModule.forFeature([{name: "Member", schema: MemberSchema}])],  // Member Schema model'ni hosil qilyabmiz
+  imports: [ MongooseModule.forFeature([{name: "Member", schema: MemberSchema}]), AuthModule],  // Member Schema model'ni hosil qilyabmiz
   providers: [MemberResolver, MemberService]
 })
 export class MemberModule {}

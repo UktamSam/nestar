@@ -12,12 +12,15 @@ export class MemberResolver {
         console.log("Mutation: signup");
         return this.memberService.signup(input);
 }
-
+    // (1) PIPE + GUARD + INTERCEPTOR.req
     @Mutation(() => Member)
     public async login(@Args("input") input: LoginInput): Promise<Member> {
         console.log("Mutation: login");
+        console.log("MVC: Controller");
+        
         return this.memberService.login(input);
     }
+    // (3) INTERCEPTOR.res
 
     @Mutation(() => String)
     public async updateMember(): Promise<string> {

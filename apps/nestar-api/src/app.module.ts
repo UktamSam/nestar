@@ -11,11 +11,13 @@ import { BoardModule } from './article/components/board/board.module';
 import { T } from './libs/types/common';
 
 @Module({
-  imports: [ ConfigModule.forRoot(), GraphQLModule.forRoot({
-    driver: ApolloDriver,
-    playground: true,
-    uploads: false,
-    autoSchemaFile: true,
+  imports: [ 
+    ConfigModule.forRoot(), 
+    GraphQLModule.forRoot({
+        driver: ApolloDriver,
+        playground: true,
+        uploads: false,
+        autoSchemaFile: true,
     formatError: (error: T) => {
       const graphQLFormatError = {
         code: error?.extensions.code,
