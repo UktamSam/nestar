@@ -10,6 +10,7 @@ import { MemberType } from '../../libs/enums/member.enum';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { MemberUpdate } from '../../libs/dto/member/member.update';
+import { shapeIntoMongoObjectId } from '../../libs/config';
 
 @Resolver()
 export class MemberResolver {
@@ -45,7 +46,7 @@ export class MemberResolver {
         console.log("Mutation: checkAuthRoles!");
         console.log("memberId:", authMember._id);
         
-        return `Hi ${authMember.memberNick}, you are ${authMember.memberType}!`;
+        return `Hi ${authMember.memberNick}, you are ${authMember.memberType} and your id is ${authMember._id}!`;
     }
 
     // Authentication: User, Admin, Agent
@@ -60,10 +61,11 @@ export class MemberResolver {
         return await this.memberService.updateMember(memberId, input);
     }
 
-    @Query(() => String)
-    public async getMember(): Promise<string> {
+    @Query(() => Member)
+    public async getMember(@Args("memberId") input: string): Promise<Member> {
         console.log('Query getMember!');
-        return await this.memberService.getMember();
+        const targetId = shapeIntoMongoObjectId(input);
+        return await this.memberService.getMember(targetId);
     }
 
     /* Admin */
