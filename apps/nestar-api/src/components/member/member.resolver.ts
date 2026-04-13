@@ -9,6 +9,7 @@ import { ObjectId } from 'mongoose';
 import { MemberType } from '../../libs/enums/member.enum';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { MemberUpdate } from '../../libs/dto/member/member.update';
 
 @Resolver()
 export class MemberResolver {
@@ -17,27 +18,18 @@ export class MemberResolver {
     @Mutation(() => Member)
     public async signup(@Args("input") input: MemberInput): Promise<Member> {
         console.log("Mutation: signup");
-        return this.memberService.signup(input);
-}
+        return await this.memberService.signup(input);
+    }
+
     // (1) PIPE + GUARD + INTERCEPTOR.req
     @Mutation(() => Member)
     public async login(@Args("input") input: LoginInput): Promise<Member> {
         console.log("Mutation: login");
         console.log("MVC: Controller");
         
-        return this.memberService.login(input);
+        return await this.memberService.login(input);
     }
     // (3) INTERCEPTOR.res
-
-    // Authentication: User, Admin, Agent
-    @UseGuards(AuthGuard)
-    @Mutation(() => String)
-    public async updateMember(@AuthMember('_id') memberId: ObjectId): Promise<string> {    // O'zimiz yozgan custom decorator orqali authMember ma'lumotlarini olish
-        console.log("Mutation: updateMember!");
-        console.log(typeof memberId);
-        console.log("memberId:", memberId);
-        return this.memberService.updateMember();
-    }
 
     @UseGuards(AuthGuard)
     @Mutation(() => String)
@@ -51,14 +43,27 @@ export class MemberResolver {
     @Mutation(() => String)
     public async checkAuthRoles(@AuthMember() authMember: Member): Promise<string> {    // O'zimiz yozgan custom decorator orqali authMember ma'lumotlarini olish
         console.log("Mutation: checkAuthRoles!");
+        console.log("memberId:", authMember._id);
+        
         return `Hi ${authMember.memberNick}, you are ${authMember.memberType}!`;
     }
 
+    // Authentication: User, Admin, Agent
+    @UseGuards(AuthGuard)
+    @Mutation(() => Member)
+    public async updateMember(
+        @Args('input') input: MemberUpdate,
+        @AuthMember('_id') memberId: ObjectId
+    ): Promise<Member> {    // O'zimiz yozgan custom decorator orqali authMember ma'lumotlarini olish
+        console.log("Mutation: updateMember!");
+        delete input._id;
+        return await this.memberService.updateMember(memberId, input);
+    }
 
     @Query(() => String)
     public async getMember(): Promise<string> {
         console.log('Query getMember!');
-        return this.memberService.getMember();
+        return await this.memberService.getMember();
     }
 
     /* Admin */
@@ -69,7 +74,7 @@ export class MemberResolver {
     @UseGuards(RolesGuard)
     @Mutation(() => String)
     public async getAllMembersByAdmin( ): Promise<string> {        
-        return this.memberService.getAllMembersByAdmin();
+        return await this.memberService.getAllMembersByAdmin();
     }
 
     // Authorization: Admin
