@@ -8,12 +8,17 @@ import { Message } from '../../libs/enums/common.enum';
 import { AuthService } from '../auth/auth.service';
 import { MemberUpdate } from '../../libs/dto/member/member.update';
 import { T } from '../../libs/types/common';
+import { ViewService } from '../view/view.service';
+import { ViewGroup } from '../../libs/enums/view.enum';
+import { ViewInput } from '../../libs/dto/view/view.input';
 
 @Injectable()
 export class MemberService {
 
     constructor(@InjectModel("Member") private readonly memberModel: Model<Member>, 
-                private authservice: AuthService,) {}
+                private authservice: AuthService,
+                private viewService: ViewService,
+            ) {}
 
     public async signup(input: MemberInput): Promise<Member> {
         input.memberPassword = await this.authservice.hasshPassword(input.memberPassword);
@@ -66,15 +71,31 @@ export class MemberService {
         return result;
     }
 
-    public async getMember(targetId: ObjectId): Promise<Member> {
+    public async getMember(memberId: ObjectId, targetId: ObjectId): Promise<Member> {
         const search: T = {
             _id: targetId,
             memberStatus: {
                 $in: [MemberStatus.ACTIVE, MemberStatus.BLOCK],
             },
         };
-        const targetMember = await this.memberModel.findOne(search).exec();
+        const targetMember = await this.memberModel.findOne(search).lean().exec();
         if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        if (memberId){
+            // record view
+            const viewInput: ViewInput = {
+                viewGroup: ViewGroup.MEMBER,
+                viewRefId: targetId,
+                memberId: memberId,
+            };
+            const newView = await this.viewService.recordView(viewInput);
+            if (newView) {
+                await this.memberModel
+                    .findOneAndUpdate( search, { $inc: { memberViews: 1 } }, { new: true })
+                    .exec();
+                targetMember.memberViews++;
+            }
+        }
 
         return targetMember;
     }
