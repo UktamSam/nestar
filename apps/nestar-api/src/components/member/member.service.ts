@@ -131,14 +131,14 @@ export class MemberService {
     public async getAllMembersByAdmin(input: MembersInquiry): Promise<Members> {
         const {text, memberStatus, memberType} = input.search;
         const match: T = {};
-        const sort: T = {[input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC};
+        const sort: T = {[input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC};     // descending — по убыванию     (3, 2, 1 / C, B, A)
 
         if (memberStatus) match.memberStatus = memberStatus;
         if (memberType) match.memberType = memberType;
-        if (text) match.memberNick = {$regex: new RegExp(text, 'i')};
+        if (text) match.memberNick = {$regex: new RegExp(text, 'i')};   //$regex — MongoDB оператор поиска 
         console.log("match:", match);
 
-        const result = await this.memberModel
+        const result = await this.memberModel       //MongoDB Aggregation Pipeline — данные проходят через стадии последовательно, как конвейер: Collection → $match → $sort → $facet → результат
             .aggregate([
                 {$match: match},
                 {$sort: sort},
