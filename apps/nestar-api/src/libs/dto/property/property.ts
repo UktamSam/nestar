@@ -1,7 +1,7 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { ObjectId } from 'mongoose';
 import { PropertyLocation, PropertyStatus, PropertyType } from "../../enums/property.enum";
-import { Member } from "../member/member";
+import { Member, TotalCounter } from "../member/member";
 
 @ObjectType()           //DTO 
 export class Property {
@@ -83,3 +83,11 @@ export class Property {
     memberData?: Member;
 }
 
+@ObjectType()
+export class Properties {
+    @Field(() => [Property])
+    properties: Property[];
+
+    @Field(() => [TotalCounter], {nullable: true})
+    metaCounter?: TotalCounter[];
+}

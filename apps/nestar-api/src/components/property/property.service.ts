@@ -3,9 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { AuthService } from '../auth/auth.service';
 import { ViewService } from '../view/view.service';
 import { Model } from 'mongoose';
-import { Property } from '../../libs/dto/property/property';
-import { PropertyInput } from '../../libs/dto/property/property.input';
-import { Message } from '../../libs/enums/common.enum';
+import { Properties, Property } from '../../libs/dto/property/property';
+import { PropertiesInquiry, PropertyInput } from '../../libs/dto/property/property.input';
+import { Direction, Message } from '../../libs/enums/common.enum';
 import { MemberService } from '../member/member.service';
 import { ObjectId } from 'mongoose';
 import { PropertyStatus } from '../../libs/enums/property.enum';
@@ -13,6 +13,7 @@ import { T, StaticticModifer } from '../../libs/types/common';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
 import * as moment from 'moment';
+import { lookUpMember, shapeIntoMongoObjectId } from '../../libs/config';
 
 
 @Injectable()
@@ -103,4 +104,70 @@ public async updateProperty(input: PropertyUpdate, memberId: ObjectId): Promise<
     return result;
     }
 // -------------------------------------------------------------------------------------------------
+
+public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promise<Properties> {
+    const match: T = {propertyStatus: PropertyStatus.ACTIVE};
+    const sort: T = {[input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC};
+
+    this.shapeMatchQuery(match, input);
+    console.log("match:", match);
+
+    const result = await this.propertyModel
+        .aggregate([
+            {$match: match},
+            {$sort: sort},
+            {
+                $facet: {
+                    properties: [
+                        {$skip: (input.page - 1) * input.limit}, 
+                        {$limit: input.limit},
+
+                        //me liked
+
+                        lookUpMember,
+                        { $unwind: '$memberData' },     // $unwind — MongoDB operator. [memberData] => memberData.
+                    ],
+                    metaCounter: [{$count: 'total'}],
+                },
+            },
+        ])
+        .exec();
+
+    if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+    return result[0];
+    }
+// -------------------------------------------------------------------------------------------------
+
+    private async shapeMatchQuery(match: T, input: PropertiesInquiry): Promise<void> {
+        const {
+            memberId,
+            locationList,
+            typeList,
+            roomList,
+            bedList,
+            options,
+            priceRange,
+            periodsRange,
+            squareRange,
+            text,
+        } = input.search;
+
+        if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
+        if (locationList) match.propertyLocation = {$in: locationList};
+        if (typeList) match.propertyType = {$in: typeList};
+        if (roomList) match.propertyRooms = {$in: roomList};
+        if (bedList) match.propertyBeds = {$in: bedList};
+
+        if (priceRange) match.propertyPrice = {$gte: priceRange.start, $lte: priceRange.end};
+        if (periodsRange) match.propertyPeriods = {$gte: periodsRange.start, $lte: periodsRange.end};
+        if (squareRange) match.propertySquare = {$gte: squareRange.start, $lte: squareRange.end};
+
+        if (text) match.propertyTitle = {$regex: new RegExp(text, 'i')};
+
+        if (options) {
+            match['$or'] = options.map((ele) => {
+                return { [ele]: true };
+            });
+            }
+    }
 }

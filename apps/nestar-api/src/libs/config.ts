@@ -5,8 +5,17 @@ import * as path from 'path';
 export const availableAgentSorts = ['createdAt', 'updatedAt', 'memberRank', 'memberPoints', 'memberProperties', 'memberArticles', 'memberFollowers', 'memberFollowings', 'memberLikes', 'memberViews'];
 export const availableMemberSorts = ['createdAt', 'updatedAt', 'memberPoints', 'memberProperties', 'memberArticles', 'memberFollowers', 'memberFollowings', 'memberLikes', 'memberViews'];
 
- // IMAGE CONFIGURATION
+export const availableOptions = ['propertyBarter', 'propertyRent'];
+export const availablePropertySortes = [
+    'createdAt', 
+    'updatedAt', 
+    'propertyViews', 
+    'propertyLikes', 
+    'propertyRank', 
+    'propertyPrice', 
+];
 
+ // IMAGE CONFIGURATION
 export const validMimeTypes = ['image/png', 'image/jpg', 'image/jpeg', 'application/octet-stream'];
 export const getSerialForImage = (filename: string) => {
 	const ext = path.parse(filename).ext;
@@ -16,3 +25,12 @@ export const getSerialForImage = (filename: string) => {
 export const shapeIntoMongoObjectId = (target: any) => {
     return typeof target === 'string' ? new ObjectId(target) : target;
 } 
+
+export const lookUpMember = {
+    $lookup: {
+        from: 'members',
+        localField: 'memberId',
+        foreignField: '_id',
+        as: 'memberData',
+    },
+}
