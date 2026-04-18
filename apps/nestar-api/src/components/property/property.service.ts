@@ -11,6 +11,8 @@ import { ObjectId } from 'mongoose';
 import { PropertyStatus } from '../../libs/enums/property.enum';
 import { T, StaticticModifer } from '../../libs/types/common';
 import { ViewGroup } from '../../libs/enums/view.enum';
+import { PropertyUpdate } from '../../libs/dto/property/property.update';
+import * as moment from 'moment';
 
 
 @Injectable()
@@ -72,8 +74,33 @@ public async propertyStatsEditor(input: StaticticModifer): Promise<Property> {
         {new: true})
     .exec();
 }
+// -------------------------------------------------------------------------------------------------
 
+public async updateProperty(input: PropertyUpdate, memberId: ObjectId): Promise<Property> {
+    let {propertyStatus, deletedAt, soldAt} = input;
+    const search: T = {
+        _id: input._id, 
+        memberId: memberId,
+        propertyStatus: PropertyStatus.ACTIVE
+    };
 
+    if (propertyStatus === PropertyStatus.SOLD) soldAt = moment().toDate();
+    else if (propertyStatus === PropertyStatus.DELETE) deletedAt = moment().toDate();
 
+    const result = await this.propertyModel
+        .findOneAndUpdate(search, input, {new: true})
+        .exec();
+    if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 
+    if (soldAt || deletedAt) {
+        await this.propertyStatsEditor({
+            _id: memberId, 
+            targetKey: "memberProperties", 
+            modifier: -1,
+        });
+    }
+
+    return result;
+    }
+// -------------------------------------------------------------------------------------------------
 }
