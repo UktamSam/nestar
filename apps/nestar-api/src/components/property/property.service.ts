@@ -30,7 +30,7 @@ public async createProperty(input: PropertyInput): Promise<Property>{
         // increase memberProperties
         const result1 = await this.memberService.memberStatsEditor({
             _id: result.memberId, 
-            targetKey: "memberPropert", 
+            targetKey: "memberProperties", 
             modifier: 1,
         })
 
@@ -94,9 +94,9 @@ public async updateProperty(input: PropertyUpdate, memberId: ObjectId): Promise<
     if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 
     if (soldAt || deletedAt) {
-        await this.propertyStatsEditor({
-            _id: memberId, 
-            targetKey: "memberProperties", 
+        await this.memberService.memberStatsEditor({
+            _id: memberId,
+            targetKey: "memberProperties",
             modifier: -1,
         });
     }
@@ -236,5 +236,32 @@ public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promis
         if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
         return result[0];
     }
+// -------------------------------------------------------------------------------------------------
 
+    public async updatePropertyByAdmin(input: PropertyUpdate): Promise<Property> {
+        let {propertyStatus, deletedAt, soldAt} = input;
+
+        const search: T = {
+            _id: input._id,
+            propertyStatus: PropertyStatus.ACTIVE,
+        };
+
+        if (propertyStatus === PropertyStatus.SOLD) soldAt = moment().toDate();
+        else if (propertyStatus === PropertyStatus.DELETE) deletedAt = moment().toDate();
+        
+        const result = await this.propertyModel
+            .findOneAndUpdate(search, input, {new: true})
+            .exec();
+        if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+
+        if (soldAt || deletedAt) {
+            await this.memberService.memberStatsEditor({
+                _id: result.memberId,
+                targetKey: "memberProperties",
+                modifier: -1,
+            });
+        }
+
+        return result;
+    }
 }

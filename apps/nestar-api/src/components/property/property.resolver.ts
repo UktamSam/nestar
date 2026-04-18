@@ -50,8 +50,6 @@ public async updateProperty(
     @AuthMember('_id') memberId: ObjectId,
     ): Promise<Property> {
     console.log('Mutation: updateProperty!');
-    
-    return await this.propertyService.updateProperty(input, memberId);
     input._id = shapeIntoMongoObjectId(input._id);
     return await this.propertyService.updateProperty(input, memberId);
 }
@@ -92,7 +90,17 @@ public async updateProperty(
         console.log('Query: getAllPropertiesByAdmin!');
         return await this.propertyService.getAllPropertiesByAdmin(input);
     }
+// --------------------------------------------------------------------------
 
-
+    @Roles(MemberType.ADMIN)
+    @UseGuards(RolesGuard)
+    @Mutation((returns) => Property)
+    public async updatePropertyByAdmin(
+        @Args('input') input: PropertyUpdate,
+    ): Promise<Property> {
+        console.log('Mutation: updatePropertyByAdmin!');
+        input._id = shapeIntoMongoObjectId(input._id);
+        return await this.propertyService.updatePropertyByAdmin(input);
+    }
 
 }
