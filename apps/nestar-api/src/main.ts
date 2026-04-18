@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());               // middlewares
   app.useGlobalInterceptors(new LoggingInterceptor());
-  app.enableCors({origin: true, credentials: true});
+  app.enableCors({origin: true, credentials: true}); // qaysi domendan kelganiga ruhsat beradi.
 
   app.use(graphqlUploadExpress({maxFileSize: 15000000, maxfiles: 10}));
   app.use("/uploads", express.static('./uploads'));

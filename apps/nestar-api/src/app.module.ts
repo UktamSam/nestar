@@ -28,7 +28,7 @@ import { T } from './libs/types/common';
     },
   }), 
   ComponentsModule, // HTTP
-  DatabaseModule, BoardModule // TCP
+  DatabaseModule // TCP
 ],
   controllers: [AppController], // HTTP
   providers: [AppService, AppResolver],
