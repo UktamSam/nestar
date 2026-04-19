@@ -12,7 +12,7 @@ import { PropertyStatus } from '../../libs/enums/property.enum';
 import { T, StaticticModifer } from '../../libs/types/common';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
-import * as moment from 'moment';
+import moment = require('moment');
 import { lookUpMember, shapeIntoMongoObjectId } from '../../libs/config';
 
 
@@ -61,7 +61,7 @@ public async getProperty(memberId: ObjectId, propertyId: ObjectId): Promise<Prop
 
         // me liked
     }
-    targetProperty.memberData = await this.memberService.getMember(null, targetProperty.memberId);
+    targetProperty.memberData = await this.memberService.getMember(null, targetProperty.memberId); //null sababi getMember ishlaganda "view++" bo'lmasligi uchun.
     return targetProperty;
     }
 // -------------------------------------------------------------------------------------------------
@@ -85,15 +85,15 @@ public async updateProperty(input: PropertyUpdate, memberId: ObjectId): Promise<
         propertyStatus: PropertyStatus.ACTIVE
     };
 
-    if (propertyStatus === PropertyStatus.SOLD) soldAt = moment().toDate();
-    else if (propertyStatus === PropertyStatus.DELETE) deletedAt = moment().toDate();
+    if (propertyStatus === PropertyStatus.SOLD) input.soldAt = moment().toDate();
+    else if (propertyStatus === PropertyStatus.DELETE) input.deletedAt = moment().toDate();
 
     const result = await this.propertyModel
         .findOneAndUpdate(search, input, {new: true})
         .exec();
     if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 
-    if (soldAt || deletedAt) {
+    if (input.soldAt || input.deletedAt) {
         await this.memberService.memberStatsEditor({
             _id: memberId,
             targetKey: "memberProperties",
@@ -118,7 +118,7 @@ public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promis
             {$sort: sort},
             {
                 $facet: {
-                    properties: [
+                    list: [
                         {$skip: (input.page - 1) * input.limit}, 
                         {$limit: input.limit},
 
@@ -175,10 +175,10 @@ public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promis
     public async getAgentProperties(memberId: ObjectId, input: AgentPropertiesInquiry): Promise<Properties> {
         const { propertyStatus } = input.search;
         if ( propertyStatus === PropertyStatus.DELETE) throw new BadRequestException(Message.NOT_ALLOWED_REQUEST);
-
+        
         const match: T = {
             memberId: memberId, 
-            propertyStatus: propertyStatus ?? {$ne: PropertyStatus.DELETE},
+            propertyStatus: propertyStatus ?? {$ne: PropertyStatus.DELETE}, // DELETE qidirma
         };
         const sort: T = {[input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC};
 
@@ -188,7 +188,7 @@ public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promis
                 {$sort: sort},
                 {
                     $facet: {
-                        properties: [
+                        list: [
                             {$skip: (input.page - 1) * input.limit}, 
                             {$limit: input.limit},
                             lookUpMember,
@@ -200,7 +200,8 @@ public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promis
                 },
             ])
             .exec();
-
+            console.log("result:", result);
+            
         if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
         return result[0];
     }
@@ -221,7 +222,7 @@ public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promis
                 {$sort: sort},
                 {
                     $facet: {
-                        properties: [
+                        list: [
                             {$skip: (input.page - 1) * input.limit}, 
                             {$limit: input.limit},
                             lookUpMember,
@@ -246,15 +247,15 @@ public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promis
             propertyStatus: PropertyStatus.ACTIVE,
         };
 
-        if (propertyStatus === PropertyStatus.SOLD) soldAt = moment().toDate();
-        else if (propertyStatus === PropertyStatus.DELETE) deletedAt = moment().toDate();
+        if (propertyStatus === PropertyStatus.SOLD) input.soldAt = moment().toDate();
+        else if (propertyStatus === PropertyStatus.DELETE) input.deletedAt = moment().toDate();
         
         const result = await this.propertyModel
             .findOneAndUpdate(search, input, {new: true})
             .exec();
         if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 
-        if (soldAt || deletedAt) {
+        if (input.soldAt || input.deletedAt) {
             await this.memberService.memberStatsEditor({
                 _id: result.memberId,
                 targetKey: "memberProperties",
