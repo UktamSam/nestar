@@ -5,8 +5,7 @@ import * as path from 'path';
 export const availableAgentSorts = ['createdAt', 'updatedAt', 'memberRank', 'memberPoints', 'memberProperties', 'memberArticles', 'memberFollowers', 'memberFollowings', 'memberLikes', 'memberViews'];
 export const availableMemberSorts = ['createdAt', 'updatedAt', 'memberPoints', 'memberProperties', 'memberArticles', 'memberFollowers', 'memberFollowings', 'memberLikes', 'memberViews'];
 export const availableBoardArticleSorts = ['createdAt', 'updatedAt', 'articleLikes', 'articleViews'];
-
-export const availableOptions = ['propertyBarter', 'propertyRent'];
+export const availableCommentSorts = ['createdAt', 'updatedAt'];
 export const availablePropertySortes = [
     'createdAt', 
     'updatedAt', 
@@ -15,6 +14,8 @@ export const availablePropertySortes = [
     'propertyRank', 
     'propertyPrice', 
 ];
+export const availableOptions = ['propertyBarter', 'propertyRent'];
+
 
  // IMAGE CONFIGURATION
 export const validMimeTypes = ['image/png', 'image/jpg', 'image/jpeg', 'application/octet-stream'];
