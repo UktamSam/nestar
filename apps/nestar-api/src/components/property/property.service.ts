@@ -66,17 +66,6 @@ public async getProperty(memberId: ObjectId, propertyId: ObjectId): Promise<Prop
     }
 // -------------------------------------------------------------------------------------------------
 
-public async propertyStatsEditor(input: StaticticModifer): Promise<Property> {
-    const {_id, targetKey, modifier} = input;
-    return await this.propertyModel
-    .findOneAndUpdate(
-        _id,
-        {$inc: {[targetKey]: modifier}},
-        {new: true})
-    .exec();
-}
-// -------------------------------------------------------------------------------------------------
-
 public async updateProperty(input: PropertyUpdate, memberId: ObjectId): Promise<Property> {
     let {propertyStatus, deletedAt, soldAt} = input;
     const search: T = {
@@ -278,5 +267,16 @@ public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promis
 
         return result;
     }
+// -------------------------------------------------------------------------------------------------
+
+public async propertyStatsEditor(input: StaticticModifer): Promise<Property> {
+    const {_id, targetKey, modifier} = input;
+    return await this.propertyModel
+    .findOneAndUpdate(
+        _id,
+        {$inc: {[targetKey]: modifier}},
+        {new: true})
+    .exec();
+}
 // -------------------------------------------------------------------------------------------------
 }

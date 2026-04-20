@@ -19,8 +19,8 @@ export class MemberService {
                 private authservice: AuthService,
                 private viewService: ViewService,
             ) {}
-
-    public async signup(input: MemberInput): Promise<Member> {
+// -------------------------------------------------------------------------------------------------
+public async signup(input: MemberInput): Promise<Member> {
         input.memberPassword = await this.authservice.hasshPassword(input.memberPassword);
         try {
         const result = await this.memberModel.create(input);
@@ -34,8 +34,8 @@ export class MemberService {
             throw new BadRequestException(Message.USED_MEMBER_NICK_OR_PHONE);
         }
     }
-
-    public async login(input: LoginInput): Promise<Member> {
+// -------------------------------------------------------------------------------------------------
+public async login(input: LoginInput): Promise<Member> {
         const { memberNick, memberPassword } = input;
         console.log("MVC: Service: ", input);
         const response = await this.memberModel
@@ -58,8 +58,8 @@ export class MemberService {
         
         return response;
     }
-
-    public async updateMember(memberId: ObjectId, input: MemberUpdate): Promise<Member> {
+// -------------------------------------------------------------------------------------------------
+public async updateMember(memberId: ObjectId, input: MemberUpdate): Promise<Member> {
         const result = await this.memberModel.findOneAndUpdate(
             { _id: memberId, memberStatus: MemberStatus.ACTIVE }, 
             input, 
@@ -70,7 +70,7 @@ export class MemberService {
         result.accessToken = await this.authservice.createToken(result); // malumot update bo'lgandan keyin token yangilanadi (user FE ko'rishi kerak)
         return result;
     }
-
+// -------------------------------------------------------------------------------------------------
     public async getMember(memberId: ObjectId, targetId: ObjectId): Promise<Member> {
         const search: T = {
             _id: targetId,
@@ -102,7 +102,7 @@ export class MemberService {
         return targetMember;
     }
 
-
+// -------------------------------------------------------------------------------------------------
     public async getAgents(memberId: ObjectId, input: AgentsInquiry): Promise<Members> {
         const {text} = input.search;
         const match: T = {memberType: MemberType.AGENT, memberStatus: MemberStatus.ACTIVE};
@@ -127,7 +127,7 @@ export class MemberService {
         if (result.length === 0) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
         return result[0];
     }
-
+// -------------------------------------------------------------------------------------------------
     public async getAllMembersByAdmin(input: MembersInquiry): Promise<Members> {
         const {text, memberStatus, memberType} = input.search;
         const match: T = {};
@@ -162,7 +162,7 @@ export class MemberService {
         if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
         return result;
     }
-
+// -------------------------------------------------------------------------------------------------
     public async memberStatsEditor(input: StaticticModifer): Promise<Member> {
         console.log("memberStatsEditor executed!");
         
