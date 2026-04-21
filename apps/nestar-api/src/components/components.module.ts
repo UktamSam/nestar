@@ -18,7 +18,7 @@ import { BoardArticleModule } from './board-article/board-article.module';
     LikeModule, 
     ViewModule, 
     FollowModule, 
-    BoardArticleModule],
-  providers: [BoardArticleResolver]
+    BoardArticleModule
+  ],
 })
 export class ComponentsModule {}

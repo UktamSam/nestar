@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { BoardArticleService } from './board-article.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import BoardArticleSchema from '../../schemas/BoardArticle.model';
@@ -20,7 +20,7 @@ import { BoardArticleResolver } from './board-article.resolver';
     AuthModule,
     MemberModule,
     ViewModule,
-    CommentModule,
+    forwardRef(() => CommentModule),    
     LikeModule,
     ],  // boardArticle Schema model'ni hosil qilyabmiz
   providers: [BoardArticleService, BoardArticleResolver],

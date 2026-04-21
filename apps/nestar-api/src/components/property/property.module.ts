@@ -16,6 +16,7 @@ import { MemberModule } from '../member/member.module';
         MemberModule
     ],  // Property Schema model'ni hosil qilyabmiz
 
-  providers: [PropertyResolver, PropertyService]
+  providers: [PropertyResolver, PropertyService],
+  exports: [PropertyService]
 })
 export class PropertyModule {}
