@@ -168,9 +168,9 @@ public async updateMember(memberId: ObjectId, input: MemberUpdate): Promise<Memb
         
         const {_id, targetKey, modifier} = input;
         return await this.memberModel
-            .findOneAndUpdate(
-                _id, 
-                {$inc: {[targetKey]: modifier}}, 
+            .findByIdAndUpdate(
+                _id ,
+                {$inc: {[targetKey]: modifier}},
                 {new: true})
             .exec();
     }

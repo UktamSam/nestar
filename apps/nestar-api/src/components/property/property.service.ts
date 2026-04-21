@@ -272,7 +272,7 @@ public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promis
 public async propertyStatsEditor(input: StaticticModifer): Promise<Property> {
     const {_id, targetKey, modifier} = input;
     return await this.propertyModel
-    .findOneAndUpdate(
+    .findByIdAndUpdate(
         _id,
         {$inc: {[targetKey]: modifier}},
         {new: true})
