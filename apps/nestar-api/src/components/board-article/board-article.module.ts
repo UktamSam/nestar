@@ -20,7 +20,6 @@ import { BoardArticleResolver } from './board-article.resolver';
     AuthModule,
     MemberModule,
     ViewModule,
-    forwardRef(() => CommentModule),    
     LikeModule,
     ],  // boardArticle Schema model'ni hosil qilyabmiz
   providers: [BoardArticleService, BoardArticleResolver],
