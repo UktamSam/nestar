@@ -106,7 +106,7 @@ public async getComments(memberId: ObjectId, input: CommentsInquiry): Promise<Co
     return result[0];
 }
 
-// -------------------------------------------------------------------------------------------------
+//=====================================================================================================
 
     public async removeCommentByAdmin(input: ObjectId): Promise<Comment> {
         const result = await this.commentModel.findByIdAndDelete(input);
