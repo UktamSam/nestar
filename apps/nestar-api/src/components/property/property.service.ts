@@ -64,7 +64,9 @@ public async getProperty(memberId: ObjectId, propertyId: ObjectId): Promise<Prop
         }
 
         // me liked
-    }
+        const likeInput = { memberId: memberId, likeRefId: propertyId, likeGroup: LikeGroup.PROPERTY };
+        targetProperty.meLiked = await this.likeService.checkLikeExistence(likeInput);                // men bu propertyga like bosganligimni tekshirish. Bosgan bo'lsam MeLiked[.....]
+}
     targetProperty.memberData = await this.memberService.getMember(null, targetProperty.memberId); //null sababi getMember ishlaganda "view++" bo'lmasligi uchun.
     return targetProperty;
     }

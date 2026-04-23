@@ -100,6 +100,8 @@ public async updateMember(memberId: ObjectId, input: MemberUpdate): Promise<Memb
                 targetMember.memberViews++;
             }
             // me liked
+            const likeInput = { memberId: memberId, likeRefId: targetId, likeGroup: LikeGroup.MEMBER };
+            targetMember.meLiked = await this.likeService.checkLikeExistence(likeInput);                // men bu memberga like bosganligimni tekshirish. Bosgan bo'lsam MeLiked[.....]
             // me Followed
         }
 

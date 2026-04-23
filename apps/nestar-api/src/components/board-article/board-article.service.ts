@@ -60,7 +60,9 @@ export class BoardArticleService {
                 targetBoardArticle.articleViews++;
             }
             // me liked
-        }
+            const likeInput = { memberId: memberId, likeRefId: articleId, likeGroup: LikeGroup.PROPERTY };
+            targetBoardArticle.meLiked = await this.likeService.checkLikeExistence(likeInput);                // men bu articlega like bosganligimni tekshirish. Bosgan bo'lsam MeLiked[.....]
+            }
         targetBoardArticle.memberData = await this.memberService.getMember(null, targetBoardArticle.memberId); //null sababi getMember ishlaganda "view++" bo'lmasligi uchun.
         return targetBoardArticle;
     }
