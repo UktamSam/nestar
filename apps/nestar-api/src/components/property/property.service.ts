@@ -4,7 +4,7 @@ import { AuthService } from '../auth/auth.service';
 import { ViewService } from '../view/view.service';
 import { Model } from 'mongoose';
 import { Properties, Property } from '../../libs/dto/property/property';
-import { AgentPropertiesInquiry, AllPropertiesInquiry, PropertiesInquiry, PropertyInput } from '../../libs/dto/property/property.input';
+import { AgentPropertiesInquiry, AllPropertiesInquiry, OrdinaryInquiry, PropertiesInquiry, PropertyInput } from '../../libs/dto/property/property.input';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { MemberService } from '../member/member.service';
 import { ObjectId } from 'mongoose';
@@ -162,6 +162,11 @@ public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promis
                 return { [ele]: true };
             });
             }
+    }
+// -------------------------------------------------------------------------------------------------
+
+public async getFavorites(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties> {
+    return await this.likeService.getFavoriteProperties(memberId, input);
     }
 // -------------------------------------------------------------------------------------------------
 
