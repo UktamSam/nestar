@@ -75,12 +75,20 @@ public async updateProperty(
         @AuthMember('_id') memberId: ObjectId
     ): Promise<Properties> {
         console.log('Query: getFavorites!');
-        console.log('input:', input);
-        console.log('memberId:', memberId);
-
         return await this.propertyService.getFavorites(memberId, input);
     }
 
+// --------------------------------------------------------------------------
+    
+    @UseGuards(AuthGuard)
+    @Query(() => Properties)
+    public async getVisited(
+        @Args('input') input: OrdinaryInquiry,
+        @AuthMember('_id') memberId: ObjectId
+    ): Promise<Properties> {
+        console.log('Query: getVisited!');
+        return await this.propertyService.getVisited(memberId, input);
+    }
 // --------------------------------------------------------------------------
     
     @Roles(MemberType.AGENT)
