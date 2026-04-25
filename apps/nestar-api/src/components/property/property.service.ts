@@ -13,11 +13,10 @@ import { T, StaticticModifer } from '../../libs/types/common';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
 import moment = require('moment');
-import { lookUpMember, shapeIntoMongoObjectId } from '../../libs/config';
+import { lookupAuthMemberLiked, lookUpMember, shapeIntoMongoObjectId } from '../../libs/config';
 import { LikeService } from '../like/like.service';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
-
 
 @Injectable()
 export class PropertyService {
@@ -116,9 +115,8 @@ public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promis
                     list: [
                         {$skip: (input.page - 1) * input.limit}, 
                         {$limit: input.limit},
-
                         //me liked
-
+                        lookupAuthMemberLiked(memberId),
                         lookUpMember,
                         { $unwind: '$memberData' },     // $unwind — MongoDB operator. [memberData] => memberData.
                     ],
