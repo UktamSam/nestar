@@ -42,9 +42,9 @@ export const lookupAuthMemberLiked = (memberId: T, targetRefId: string = '$_id')
       pipeline: [
         {
           $match: {
-            $expr: {
+            $expr: {                                          //С $expr — можно сравнивать поля между собой или использовать переменные из $lookup 
               $and: [
-                { $eq: ['$likeRefId', '$$localLikeRefId'] },
+                { $eq: ['$likeRefId', '$$localLikeRefId'] }, // $ - schema field, $$ - local variable
                 { $eq: ['$memberId', '$$localMemberId'] },
               ],
             },
