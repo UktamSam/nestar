@@ -121,7 +121,7 @@ export class PISearch {
 
     @IsOptional()
     @Field(() => Range, { nullable: true })
-    priceRange?: Range;
+    pricesRange?: Range;
 
     @IsOptional()
     @Field(() => PeriodRange, { nullable: true })
@@ -129,7 +129,7 @@ export class PISearch {
 
     @IsOptional()
     @Field(() => Range, { nullable: true })
-    squareRange?: Range;
+    squaresRange?: Range;
 
     @IsOptional()
     @Field(() => String, { nullable: true })

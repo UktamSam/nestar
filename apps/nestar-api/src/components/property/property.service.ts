@@ -139,21 +139,21 @@ public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promis
             roomList,
             bedList,
             options,
-            priceRange,
+            pricesRange,
             periodsRange,
-            squareRange,
+            squaresRange,
             text,
         } = input.search;
 
         if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
-        if (locationList) match.propertyLocation = {$in: locationList};
-        if (typeList) match.propertyType = {$in: typeList};
-        if (roomList) match.propertyRooms = {$in: roomList};
-        if (bedList) match.propertyBeds = {$in: bedList};
+        if (locationList && locationList.length) match.propertyLocation = {$in: locationList};
+        if (typeList && typeList.length) match.propertyType = {$in: typeList};
+        if (roomList && roomList.length) match.propertyRooms = {$in: roomList};
+        if (bedList && bedList.length) match.propertyBeds = {$in: bedList};
 
-        if (priceRange) match.propertyPrice = {$gte: priceRange.start, $lte: priceRange.end};
+        if (pricesRange) match.propertyPrice = {$gte: pricesRange.start, $lte: pricesRange.end};
         if (periodsRange) match.propertyPeriods = {$gte: periodsRange.start, $lte: periodsRange.end};
-        if (squareRange) match.propertySquare = {$gte: squareRange.start, $lte: squareRange.end};
+        if (squaresRange) match.propertySquare = {$gte: squaresRange.start, $lte: squaresRange.end};
 
         if (text) match.propertyTitle = {$regex: new RegExp(text, 'i')};
 
