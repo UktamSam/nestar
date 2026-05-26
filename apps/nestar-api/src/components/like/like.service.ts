@@ -10,6 +10,7 @@ import { OrdinaryInquiry } from '../../libs/dto/property/property.input';
 import { Properties } from '../../libs/dto/property/property';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { lookupFavorite } from '../../libs/config';
+import { PropertyStatus } from '../../libs/enums/property.enum';
 
 @Injectable()
 export class LikeService {
@@ -50,7 +51,7 @@ export class LikeService {
 
     public async getFavoriteProperties(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties> {
         const { page, limit } = input;
-        const match: T = { likeGroup: LikeGroup.PROPERTY, memberId: memberId};
+        const match: T = { likeGroup: LikeGroup.PROPERTY, memberId: memberId };
 
         const data: T = await this.likeModel
         .aggregate([
@@ -65,6 +66,7 @@ export class LikeService {
                 },
             },
             { $unwind: '$favoriteProperty' },
+            { $match: { 'favoriteProperty.propertyStatus': PropertyStatus.ACTIVE } },
             {
                 $facet: {
                     list: [
